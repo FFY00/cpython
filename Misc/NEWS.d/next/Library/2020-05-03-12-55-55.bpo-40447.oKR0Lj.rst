@@ -1,0 +1,2 @@
+Accept pathlib.Path in the ddir, stripdir and prependdir arguments of
+compileall.compile_file and compileall.compile_dir.
