@@ -21,11 +21,20 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Check for source changes
+      run: |
+        if git diff --name-only $GITHUB_SHA..$GITHUB_BASE_REF | grep -qvE '(\.rst$|^Doc|^Misc)'; then
+          echo '::set-env name=run_tests::true'
+        fi
+      shell: bash
     - name: Build CPython
+      if: env.run_tests
       run: .\PCbuild\build.bat -e -p Win32
     - name: Display build info
+      if: env.run_tests
       run: .\python.bat -m test.pythoninfo
     - name: Tests
+      if: env.run_tests
       run: .\PCbuild\rt.bat -q -uall -u-cpu -rwW --slowest --timeout=1200 -j0
 
   build_win_amd64:
@@ -33,11 +42,20 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Check for source changes
+      run: |
+        if git diff --name-only $GITHUB_SHA..$GITHUB_BASE_REF | grep -qvE '(\.rst$|^Doc|^Misc)'; then
+          echo '::set-env name=run_tests::true'
+        fi
+      shell: bash
     - name: Build CPython
+      if: env.run_tests
       run: .\PCbuild\build.bat -e -p x64
     - name: Display build info
+      if: env.run_tests
       run: .\python.bat -m test.pythoninfo
     - name: Tests
+      if: env.run_tests
       run: .\PCbuild\rt.bat -x64 -q -uall -u-cpu -rwW --slowest --timeout=1200 -j0
 
   build_macos:
@@ -45,13 +63,22 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Check for source changes
+      run: |
+        if git diff --name-only $GITHUB_SHA..$GITHUB_BASE_REF | grep -qvE '(\.rst$|^Doc|^Misc)'; then
+          echo '::set-env name=run_tests::true'
+        fi
     - name: Configure CPython
+      if: env.run_tests
       run: ./configure --with-pydebug --with-openssl=/usr/local/opt/openssl --prefix=/opt/python-dev
     - name: Build CPython
+      if: env.run_tests
       run: make -j4
     - name: Display build info
+      if: env.run_tests
       run: make pythoninfo
     - name: Tests
+      if: env.run_tests
       run: make buildbottest TESTOPTS="-j4 -uall,-cpu"
 
   build_ubuntu:
@@ -61,22 +88,33 @@ jobs:
       OPENSSL_VER: 1.1.1f
     steps:
     - uses: actions/checkout@v1
+    - name: Check for source changes
+      run: |
+        if git diff --name-only $GITHUB_SHA..$GITHUB_BASE_REF | grep -qvE '(\.rst$|^Doc|^Misc)'; then
+          echo '::set-env name=run_tests::true'
+        fi
     - name: Install Dependencies
+      if: env.run_tests
       run: sudo ./.github/workflows/posix-deps-apt.sh
     - name: 'Restore OpenSSL build'
       id: cache-openssl
+      if: env.run_tests
       uses: actions/cache@v1
       with:
         path: ./multissl/openssl/${{ env.OPENSSL_VER }}
         key: ${{ runner.os }}-multissl-openssl-${{ env.OPENSSL_VER }}
     - name: Install OpenSSL
-      if: steps.cache-openssl.outputs.cache-hit != 'true'
+      if: env.run_tests && steps.cache-openssl.outputs.cache-hit != 'true'
       run: python3 Tools/ssl/multissltests.py --steps=library --base-directory $PWD/multissl --openssl $OPENSSL_VER --system Linux
     - name: Configure CPython
+      if: env.run_tests
       run: ./configure --with-pydebug --with-openssl=$PWD/multissl/openssl/$OPENSSL_VER
     - name: Build CPython
+      if: env.run_tests
       run: make -j4
     - name: Display build info
+      if: env.run_tests
       run: make pythoninfo
     - name: Tests
+      if: env.run_tests
       run: xvfb-run make buildbottest TESTOPTS="-j4 -uall,-cpu"
