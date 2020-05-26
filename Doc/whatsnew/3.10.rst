@@ -123,6 +123,12 @@ Add :data:`sys.orig_argv` attribute: the list of the original command line
 arguments passed to the Python executable.
 (Contributed by Victor Stinner in :issue:`23427`.)
 
+base64
+------
+
+Add :func:`base64.b32hexencode` and :func:`base64.b32hexdecode` to support the
+Base32 Encoding with Extended Hex Alphabet.
+
 
 Optimizations
 =============
