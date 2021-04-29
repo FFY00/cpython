@@ -277,6 +277,11 @@ class HelperFunctionsTests(unittest.TestCase):
         self.assertEqual(site.USER_BASE, site.getuserbase())
 
     def test_getsitepackages(self):
+        sys.path.append(os.path.abspath(os.path.join(__file__, '..', 'vendor_config')))
+        # force re-load of vendor schemes with the patched sys.path
+        site._VENDOR_SCHEMES = None
+        sysconfig._load_vendor_schemes()
+
         site.PREFIXES = ['xoxo']
         dirs = site.getsitepackages()
         if os.sep == '/':
@@ -288,17 +293,20 @@ class HelperFunctionsTests(unittest.TestCase):
                                       'site-packages')
                 self.assertEqual(dirs[0], wanted)
             else:
-                self.assertEqual(len(dirs), 1)
+                self.assertEqual(len(dirs), 3)
             wanted = os.path.join('xoxo', 'lib',
                                   'python%d.%d' % sys.version_info[:2],
                                   'site-packages')
-            self.assertEqual(dirs[-1], wanted)
+            self.assertEqual(dirs[-3], wanted)
+            self.assertEqual(sorted(dirs[-2:]), ['vendor-plat-packages', 'vendor-pure-packages'])
         else:
             # other platforms
             self.assertEqual(len(dirs), 2)
             self.assertEqual(dirs[0], 'xoxo')
             wanted = os.path.join('xoxo', 'lib', 'site-packages')
             self.assertEqual(dirs[1], wanted)
+            self.assertEqual(dirs[2], 'vendor-pure-packages')
+            self.assertEqual(dirs[3], 'vendor-plat-packages')
 
     @unittest.skipUnless(HAS_USER_SITE, 'need user site')
     def test_no_home_directory(self):

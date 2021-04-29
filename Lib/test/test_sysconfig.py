@@ -263,10 +263,14 @@ class TestSysConfig(unittest.TestCase):
         self.assertTrue(os.path.isfile(config_h), config_h)
 
     def test_get_scheme_names(self):
-        wanted = ['nt', 'posix_home', 'posix_prefix']
+        sys.path.append(os.path.abspath(os.path.join(__file__, '..', 'vendor_config')))
+        # force re-load of vendor schemes with the patched sys.path
+        sysconfig._load_vendor_schemes()
+
+        wanted = ['nt', 'posix_home', 'posix_prefix', 'some_vendor']
         if HAS_USER_BASE:
             wanted.extend(['nt_user', 'osx_framework_user', 'posix_user'])
-        self.assertEqual(get_scheme_names(), tuple(sorted(wanted)))
+        self.assertEqual(sysconfig.get_scheme_names(), tuple(sorted(wanted)))
 
     @skip_unless_symlink
     def test_symlink(self): # Issue 7880

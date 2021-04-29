@@ -72,7 +72,7 @@ Every new component that is installed using :mod:`distutils` or a
 Distutils-based system will follow the same scheme to copy its file in the right
 places.
 
-Python currently supports seven schemes:
+Python currently supports seven mandatory schemes:
 
 - *posix_prefix*: scheme for POSIX platforms like Linux or Mac OS X.  This is
   the default scheme used when Python or a component is installed.
@@ -84,6 +84,10 @@ Python currently supports seven schemes:
   located under the user home directory.
 - *nt*: scheme for NT platforms like Windows.
 - *nt_user*: scheme for NT platforms, when the *user* option is used.
+
+Additionally to these, Python also supports vendor schemes specified in the
+``EXTRA_SITE_INSTALL_SCHEMES`` variable of the vendor config
+(``--with-vendor-config`` configure option).
 
 Each scheme is itself composed of a series of paths and each path has a unique
 identifier.  Python currently uses eight paths:
