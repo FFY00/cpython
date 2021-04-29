@@ -69,8 +69,11 @@ class HelperFunctionsTests(unittest.TestCase):
         self.old_base = site.USER_BASE
         self.old_site = site.USER_SITE
         self.old_prefixes = site.PREFIXES
+        self.old_vendor_schemes = site._VENDOR_SCHEMES
         self.original_vars = sysconfig._CONFIG_VARS
         self.old_vars = copy(sysconfig._CONFIG_VARS)
+        self.original_schemes = sysconfig._INSTALL_SCHEMES
+        self.old_schemes = copy(sysconfig._INSTALL_SCHEMES)
 
     def tearDown(self):
         """Restore sys.path"""
@@ -78,9 +81,13 @@ class HelperFunctionsTests(unittest.TestCase):
         site.USER_BASE = self.old_base
         site.USER_SITE = self.old_site
         site.PREFIXES = self.old_prefixes
+        site._VENDOR_SCHEMES = self.old_vendor_schemes
         sysconfig._CONFIG_VARS = self.original_vars
         sysconfig._CONFIG_VARS.clear()
         sysconfig._CONFIG_VARS.update(self.old_vars)
+        sysconfig._INSTALL_SCHEMES = self.original_schemes
+        sysconfig._INSTALL_SCHEMES.clear()
+        sysconfig._INSTALL_SCHEMES.update(self.old_schemes)
 
     def test_makepath(self):
         # Test makepath() have an absolute path for its first return value
@@ -299,6 +306,37 @@ class HelperFunctionsTests(unittest.TestCase):
             self.assertEqual(dirs[0], 'xoxo')
             wanted = os.path.join('xoxo', 'lib', 'site-packages')
             self.assertEqual(dirs[1], wanted)
+
+    def test_getsitepackages_vendor(self):
+        sys.path.append(os.path.abspath(os.path.join(__file__, '..', 'vendor_config')))
+        # force re-load of vendor schemes with the patched sys.path
+        site._VENDOR_SCHEMES = None
+        sysconfig._load_vendor_schemes()
+
+        site.PREFIXES = ['xoxo']
+        dirs = site.getsitepackages()
+        if os.sep == '/':
+            # OS X, Linux, FreeBSD, etc
+            if sys.platlibdir != "lib":
+                self.assertEqual(len(dirs), 2)
+                wanted = os.path.join('xoxo', sys.platlibdir,
+                                      'python%d.%d' % sys.version_info[:2],
+                                      'site-packages')
+                self.assertEqual(dirs[0], wanted)
+            else:
+                self.assertEqual(len(dirs), 3)
+            wanted = os.path.join('xoxo', 'lib',
+                                  'python%d.%d' % sys.version_info[:2],
+                                  'site-packages')
+            self.assertEqual(dirs[-3], wanted)
+            self.assertEqual(sorted(dirs[-2:]), ['vendor-plat-packages', 'vendor-pure-packages'])
+        else:
+            # other platforms
+            self.assertEqual(len(dirs), 4)
+            self.assertEqual(dirs[0], 'xoxo')
+            wanted = os.path.join('xoxo', 'lib', 'site-packages')
+            self.assertEqual(dirs[1], wanted)
+            self.assertEqual(sorted(dirs[2:]), ['vendor-plat-packages', 'vendor-pure-packages'])
 
     @unittest.skipUnless(HAS_USER_SITE, 'need user site')
     def test_no_home_directory(self):

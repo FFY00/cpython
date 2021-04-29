@@ -1508,6 +1508,7 @@ TESTSUBDIRS=	ctypes/test \
 		unittest/test unittest/test/testmock
 
 TEST_MODULES=@TEST_MODULES@
+VENDOR_CONFIG=@VENDOR_CONFIG@
 libinstall:	build_all $(srcdir)/Modules/xxmodule.c
 	@for i in $(SCRIPTDIR) $(LIBDEST); \
 	do \
@@ -1543,6 +1544,9 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
 			echo $(INSTALL_DATA) $$i $(LIBDEST); \
 		fi; \
 	done
+	@if test ! -z "$(VENDOR_CONFIG)"; then \
+		$(INSTALL_SCRIPT) $(VENDOR_CONFIG) $(DESTDIR)$(LIBDEST)/_vendor_config.py; \
+	fi
 	@if test "$(TEST_MODULES)" = yes; then \
 		subdirs="$(LIBSUBDIRS) $(TESTSUBDIRS)"; \
 	else \

@@ -59,6 +59,23 @@ _INSTALL_SCHEMES = {
     }
 
 
+def _load_vendor_schemes():
+    # add vendor defined schemes
+    try:
+        import _vendor_config
+
+        _INSTALL_SCHEMES.update({
+            name: scheme
+            for name, scheme in _vendor_config.EXTRA_SITE_INSTALL_SCHEMES.items()
+            if name not in _INSTALL_SCHEMES
+        })
+    except (ModuleNotFoundError, AttributeError):
+        pass
+
+
+_load_vendor_schemes()
+
+
 # NOTE: site.py has copy of this function.
 # Sync it when modify this function.
 def _getuserbase():

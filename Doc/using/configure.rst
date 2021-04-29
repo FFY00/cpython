@@ -116,6 +116,21 @@ General Options
 
    .. versionadded:: 3.10
 
+.. cmdoption:: --with-vendor-config=config.py
+
+   Path to the vendor config (none by default).
+
+   The vendor config is a Python file that allows configuring some aspects of
+   the Python distribution.
+
+   A ``EXTRA_SITE_INSTALL_SCHEMES`` variable can be specified in the config to
+   add extra site install schemes. These schemes will be picked up by the
+   :mod:`sysconfig` module, and will be activated in the :mod:`site` module
+   initialization. This options allow Python distributors to define custom
+   locations to use for their Python packages.
+
+   .. versionadded:: 3.10
+
 
 Install Options
 ---------------

@@ -74,6 +74,7 @@ import os
 import builtins
 import _sitebuiltins
 import io
+import sysconfig
 
 # Prefixes for site-packages; add additional prefixes like /usr/local here
 PREFIXES = [sys.prefix, sys.exec_prefix]
@@ -86,6 +87,8 @@ ENABLE_USER_SITE = None
 # functions, through the main() function when Python starts.
 USER_SITE = None
 USER_BASE = None
+
+_VENDOR_SCHEMES = None
 
 
 def _trace(message):
@@ -350,6 +353,7 @@ def getsitepackages(prefixes=None):
     this function will find its `site-packages` subdirectory depending on the
     system environment, and will return a list of full paths.
     """
+    global _VENDOR_SCHEMES
     sitepackages = []
     seen = set()
 
@@ -377,6 +381,23 @@ def getsitepackages(prefixes=None):
             for libdir in libdirs:
                 path = os.path.join(prefix, libdir, "site-packages")
                 sitepackages.append(path)
+
+    if _VENDOR_SCHEMES is None:  # delayed execution
+        try:
+            import _vendor_config
+
+
+            _VENDOR_SCHEMES = _vendor_config.EXTRA_SITE_INSTALL_SCHEMES.keys()
+        except (ModuleNotFoundError, AttributeError):
+            _VENDOR_SCHEMES = []
+
+    # vendor site schemes
+    for scheme in _VENDOR_SCHEMES:
+        sitepackages += list({
+            sysconfig.get_path('purelib', scheme),
+            sysconfig.get_path('platlib', scheme),
+        })
+
     return sitepackages
 
 def addsitepackages(known_paths, prefixes=None):

@@ -44,6 +44,7 @@ class TestSysConfig(unittest.TestCase):
         self.isabs = os.path.isabs
         self.splitdrive = os.path.splitdrive
         self._config_vars = sysconfig._CONFIG_VARS, copy(sysconfig._CONFIG_VARS)
+        self._schemes = sysconfig._INSTALL_SCHEMES, copy(sysconfig._INSTALL_SCHEMES)
         self._added_envvars = []
         self._changed_envvars = []
         for var in ('MACOSX_DEPLOYMENT_TARGET', 'PATH'):
@@ -69,6 +70,9 @@ class TestSysConfig(unittest.TestCase):
         sysconfig._CONFIG_VARS = self._config_vars[0]
         sysconfig._CONFIG_VARS.clear()
         sysconfig._CONFIG_VARS.update(self._config_vars[1])
+        sysconfig._INSTALL_SCHEMES = self._schemes[0]
+        sysconfig._INSTALL_SCHEMES.clear()
+        sysconfig._INSTALL_SCHEMES.update(self._schemes[1])
         for var, value in self._changed_envvars:
             os.environ[var] = value
         for var in self._added_envvars:
@@ -267,6 +271,16 @@ class TestSysConfig(unittest.TestCase):
         if HAS_USER_BASE:
             wanted.extend(['nt_user', 'osx_framework_user', 'posix_user'])
         self.assertEqual(get_scheme_names(), tuple(sorted(wanted)))
+
+    def test_get_scheme_names_vendor(self):
+        sys.path.append(os.path.abspath(os.path.join(__file__, '..', 'vendor_config')))
+        # force re-load of vendor schemes with the patched sys.path
+        sysconfig._load_vendor_schemes()
+
+        wanted = ['nt', 'posix_home', 'posix_prefix', 'some_vendor']
+        if HAS_USER_BASE:
+            wanted.extend(['nt_user', 'osx_framework_user', 'posix_user'])
+        self.assertEqual(sysconfig.get_scheme_names(), tuple(sorted(wanted)))
 
     @skip_unless_symlink
     def test_symlink(self): # Issue 7880
