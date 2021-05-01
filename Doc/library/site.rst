@@ -34,7 +34,7 @@ are skipped.  For the tail part, it uses the empty string and then
 :file:`lib/site-packages` (on Windows) or
 :file:`lib/python{X.Y}/site-packages` (on Unix and Macintosh), and finally
 the ``purelib`` and ``platlib`` paths for each scheme specified in the
-``EXTRA_SITE_INSTALL_SCHEMES`` variable of the vendor config.  For each
+``EXTRA_SITE_INSTALL_SCHEMES`` list variable of the vendor config. For each
 of the distinct head-tail combinations, it sees if it refers to an existing
 directory, and if so, adds it to ``sys.path`` and also inspects the newly
 added path for configuration files.

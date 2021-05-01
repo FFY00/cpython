@@ -66,7 +66,7 @@ def _load_vendor_schemes():
 
         _INSTALL_SCHEMES.update({
             name: scheme
-            for name, scheme in _vendor_config.EXTRA_SITE_INSTALL_SCHEMES.items()
+            for name, scheme in _vendor_config.EXTRA_INSTALL_SCHEMES.items()
             if name not in _INSTALL_SCHEMES
         })
     except (ModuleNotFoundError, AttributeError):

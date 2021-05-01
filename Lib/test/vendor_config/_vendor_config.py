@@ -1,4 +1,4 @@
-EXTRA_SITE_INSTALL_SCHEMES = {
+EXTRA_INSTALL_SCHEMES = {
     'some_vendor': {
         'stdlib': '{installed_base}/{platlibdir}/python{py_version_short}',
         'platstdlib': '{platbase}/{platlibdir}/python{py_version_short}',
@@ -12,3 +12,7 @@ EXTRA_SITE_INSTALL_SCHEMES = {
         'data': 'vendor-data',
     },
 }
+
+EXTRA_SITE_INSTALL_SCHEMES = [
+    'some_vendor',
+]

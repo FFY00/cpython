@@ -387,7 +387,7 @@ def getsitepackages(prefixes=None):
             import _vendor_config
 
 
-            _VENDOR_SCHEMES = _vendor_config.EXTRA_SITE_INSTALL_SCHEMES.keys()
+            _VENDOR_SCHEMES = _vendor_config.EXTRA_SITE_INSTALL_SCHEMES
         except (ModuleNotFoundError, AttributeError):
             _VENDOR_SCHEMES = []
 
