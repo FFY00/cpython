@@ -132,6 +132,14 @@ General Options
    allow Python distributors to define custom locations to use for their Python
    packages.
 
+   A ``get_preferred_schemes()`` function can be specialized in the config. This
+   function should return a dict containing preferred scheme names on the
+   current platform. Python implementers and redistributors may add their
+   preferred schemes to the ``EXTRA_INSTALL_SCHEMES`` vendor config variable,
+   and modify this function to return those scheme names, to e.g. provide
+   different schemes for system and language package managers to use, so
+   packages installed by either do not mix with those by the other.
+
    .. versionadded:: 3.10
 
 

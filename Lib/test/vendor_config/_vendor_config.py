@@ -16,3 +16,11 @@ EXTRA_INSTALL_SCHEMES = {
 EXTRA_SITE_INSTALL_SCHEMES = [
     'some_vendor',
 ]
+
+
+def get_preferred_schemes():
+    return {
+        'prefix': 'some_vendor',
+        'home': 'some_vendor',
+        'user': 'some_vendor',
+    }

@@ -58,6 +58,8 @@ _INSTALL_SCHEMES = {
         },
     }
 
+_get_preferred_schemes = None
+
 
 def _load_vendor_schemes():
     # add vendor defined schemes
@@ -229,7 +231,7 @@ def _expand_vars(scheme, vars):
     return res
 
 
-def _get_preferred_schemes():
+def _get_preferred_schemes_default():
     if os.name == 'nt':
         return {
             'prefix': 'nt',
@@ -250,6 +252,15 @@ def _get_preferred_schemes():
 
 
 def get_preferred_scheme(key):
+    global _get_preferred_schemes
+    if not _get_preferred_schemes:
+        try:
+            import _vendor_config
+
+
+            _get_preferred_schemes = _vendor_config.get_preferred_schemes
+        except (ModuleNotFoundError, AttributeError):
+            _get_preferred_schemes = _get_preferred_schemes_default
     scheme = _get_preferred_schemes()[key]
     if scheme not in _INSTALL_SCHEMES:
         raise ValueError(

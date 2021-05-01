@@ -15,7 +15,8 @@ import sysconfig
 from sysconfig import (get_paths, get_platform, get_config_vars,
                        get_path, get_path_names, _INSTALL_SCHEMES,
                        get_default_scheme, get_scheme_names, get_config_var,
-                       _expand_vars, _get_preferred_schemes, _main)
+                       get_preferred_scheme, _get_preferred_schemes_default,
+                       _expand_vars, _main)
 import _osx_support
 
 
@@ -43,6 +44,7 @@ class TestSysConfig(unittest.TestCase):
         self.join = os.path.join
         self.isabs = os.path.isabs
         self.splitdrive = os.path.splitdrive
+        self._get_preferred_schemes = sysconfig._get_preferred_schemes
         self._config_vars = sysconfig._CONFIG_VARS, copy(sysconfig._CONFIG_VARS)
         self._schemes = sysconfig._INSTALL_SCHEMES, copy(sysconfig._INSTALL_SCHEMES)
         self._added_envvars = []
@@ -67,6 +69,7 @@ class TestSysConfig(unittest.TestCase):
         os.path.join = self.join
         os.path.isabs = self.isabs
         os.path.splitdrive = self.splitdrive
+        sysconfig._get_preferred_schemes = self._get_preferred_schemes
         sysconfig._CONFIG_VARS = self._config_vars[0]
         sysconfig._CONFIG_VARS.clear()
         sysconfig._CONFIG_VARS.update(self._config_vars[1])
@@ -117,18 +120,26 @@ class TestSysConfig(unittest.TestCase):
     def test_get_default_scheme(self):
         self.assertIn(get_default_scheme(), _INSTALL_SCHEMES)
 
-    def test_get_preferred_schemes(self):
+    def test_get_preferred_schemes_vendor(self):
+        sys.path.append(os.path.abspath(os.path.join(__file__, '..', 'vendor_config')))
+        # force re-load of vendor schemes with the patched sys.path
+        sysconfig._get_preferred_schemes = None
+        sysconfig._load_vendor_schemes()
+
+        self.assertEqual(get_preferred_scheme('prefix'), 'some_vendor')
+
+    def test_get_preferred_schemes_default(self):
         expected_schemes = {'prefix', 'home', 'user'}
 
         # Windows.
         os.name = 'nt'
-        schemes = _get_preferred_schemes()
+        schemes = _get_preferred_schemes_default()
         self.assertIsInstance(schemes, dict)
         self.assertEqual(set(schemes), expected_schemes)
 
         # Mac and Linux, shared library build.
         os.name = 'posix'
-        schemes = _get_preferred_schemes()
+        schemes = _get_preferred_schemes_default()
         self.assertIsInstance(schemes, dict)
         self.assertEqual(set(schemes), expected_schemes)
 
