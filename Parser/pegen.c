@@ -2694,6 +2694,7 @@ deal_with_gstring2(Parser *p, Token* a, asdl_expr_seq* raw_expressions, Token*b)
                               b->col_offset, b->end_lineno,
                               b->end_col_offset, p->arena);
     if (the_str == NULL) {
+        Py_DECREF(str);
         return NULL;
     }
     asdl_seq_SET(seq, n_items, the_str);
