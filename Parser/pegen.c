@@ -2350,7 +2350,7 @@ _PyPegen_concatenate_strings2(Parser *p, asdl_expr_seq *strings,
     int bytes_found = 0;
 
     Py_ssize_t i = 0;
-    Py_ssize_t n_elements = 0;
+    Py_ssize_t n_flattened_elements = 0;
     for (i = 0; i < len; i++) {
         expr_ty elem = asdl_seq_GET(strings, i);
         if (elem->kind == Constant_kind) {
@@ -2359,9 +2359,9 @@ _PyPegen_concatenate_strings2(Parser *p, asdl_expr_seq *strings,
             } else {
                 unicode_string_found = 1;
             }
-            n_elements++;
+            n_flattened_elements++;
         } else {
-            n_elements += asdl_seq_LEN(elem->v.JoinedStr.values);
+            n_flattened_elements += asdl_seq_LEN(elem->v.JoinedStr.values);
             f_string_found = 1;
         }
     }
@@ -2383,27 +2383,95 @@ _PyPegen_concatenate_strings2(Parser *p, asdl_expr_seq *strings,
         return _PyAST_Constant(res, NULL, lineno, col_offset, end_lineno, end_col_offset, p->arena);
     }
 
-    asdl_expr_seq* values = _Py_asdl_expr_seq_new(n_elements, p->arena);
-    if (values == NULL) {
+    asdl_expr_seq* flattened = _Py_asdl_expr_seq_new(n_flattened_elements, p->arena);
+    if (flattened == NULL) {
         return NULL;
     }
 
+    /* build flattened list */
     Py_ssize_t current_pos = 0;
     Py_ssize_t j = 0;
     for (i = 0; i < len; i++) {
         expr_ty elem = asdl_seq_GET(strings, i);
         if (elem->kind == Constant_kind) {
-            asdl_seq_SET(values, current_pos++, elem);
+            asdl_seq_SET(flattened, current_pos++, elem);
         } else {
             for (j=0; j < asdl_seq_LEN(elem->v.JoinedStr.values); j++) {
                 expr_ty subvalue = asdl_seq_GET(elem->v.JoinedStr.values, j);
                 if (subvalue == NULL) {
                     return NULL;
                 }
-                asdl_seq_SET(values, current_pos++, subvalue);
+                asdl_seq_SET(flattened, current_pos++, subvalue);
             }
         }
     }
+
+    /* calculate folded element count */
+    Py_ssize_t n_elements = 0;
+    int prev_is_constant = 0;
+    for (i = 0; i < n_flattened_elements; i++) {
+        expr_ty elem = asdl_seq_GET(flattened, i);
+        if (!(prev_is_constant && elem->kind == Constant_kind)) {
+            n_elements++;
+        }
+        prev_is_constant = elem->kind == Constant_kind;
+    }
+
+    asdl_expr_seq* values = _Py_asdl_expr_seq_new(n_elements, p->arena);
+    if (values == NULL) {
+        return NULL;
+    }
+
+    /* build folded list */
+    _PyUnicodeWriter writer;
+    current_pos = 0;
+    for (i = 0; i < n_flattened_elements; i++) {
+        expr_ty elem = asdl_seq_GET(flattened, i);
+
+        /* if the current elem and the following are constants,
+           fold them and all consequent constants */
+        if (elem->kind == Constant_kind && i+1 < n_flattened_elements
+            && asdl_seq_GET(flattened, i+1)->kind == Constant_kind) {
+
+            _PyUnicodeWriter_Init(&writer);
+            expr_ty last_elem = elem;
+            for (j = i; j < n_flattened_elements; j++) {
+                elem = asdl_seq_GET(flattened, j);
+                if (elem->kind == Constant_kind) {
+                    if (_PyUnicodeWriter_WriteStr(&writer, elem->v.Constant.value)) {
+                        _PyUnicodeWriter_Dealloc(&writer);
+                        return NULL;
+                    }
+                    last_elem = elem;
+                } else {
+                    break;
+                }
+            }
+            i = j-1;
+
+            PyObject *concat_str = _PyUnicodeWriter_Finish(&writer);
+            if (concat_str == NULL) {
+                _PyUnicodeWriter_Dealloc(&writer);
+                return NULL;
+            }
+
+            elem = _PyAST_Constant(concat_str, NULL, elem->lineno, elem->col_offset,
+                                   last_elem->end_lineno, last_elem->end_col_offset, p->arena);
+            if (elem == NULL) {
+                Py_DECREF(concat_str);
+                return NULL;
+            }
+        }
+
+        asdl_seq_SET(values, current_pos++, elem);
+    }
+
+    if (!f_string_found) {
+        assert(n_elements == 1);
+        expr_ty elem = asdl_seq_GET(values, 0);
+        assert(elem->kind == Constant_kind);
+        return elem;
+     }
 
     return _PyAST_JoinedStr(values, lineno, col_offset, end_lineno, end_col_offset, p->arena);
 }
