@@ -2383,6 +2383,10 @@ _PyPegen_concatenate_strings2(Parser *p, asdl_expr_seq *strings,
         return _PyAST_Constant(res, NULL, lineno, col_offset, end_lineno, end_col_offset, p->arena);
     }
 
+    if (!f_string_found && len == 1) {
+        return asdl_seq_GET(strings, 0);
+    }
+
     asdl_expr_seq* flattened = _Py_asdl_expr_seq_new(n_flattened_elements, p->arena);
     if (flattened == NULL) {
         return NULL;
