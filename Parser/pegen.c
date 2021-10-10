@@ -2415,7 +2415,7 @@ _PyPegen_concatenate_strings2(Parser *p, asdl_expr_seq *strings,
     int prev_is_constant = 0;
     for (i = 0; i < n_flattened_elements; i++) {
         expr_ty elem = asdl_seq_GET(flattened, i);
-        if (!(prev_is_constant && elem->kind == Constant_kind)) {
+        if (!prev_is_constant || elem->kind != Constant_kind) {
             n_elements++;
         }
         prev_is_constant = elem->kind == Constant_kind;
