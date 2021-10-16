@@ -545,7 +545,7 @@ x = (
                              "f'{3(#)}'",
                              "f'{#}'",
                              ])
-        self.assertAllRaise(SyntaxError, r"f-string: unmatched '\)'",
+        self.assertAllRaise(SyntaxError, r"closing parenthesis '\)' does not match opening parenthesis '{'",
                             ["f'{)#}'",   # When wrapped in parens, this becomes
                                           #  '()#)'.  Make sure that doesn't compile.
                              ])
