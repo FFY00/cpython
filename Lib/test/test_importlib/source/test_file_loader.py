@@ -22,7 +22,7 @@ from test.test_py_compile import without_source_date_epoch
 from test.test_py_compile import SourceDateEpochTestMeta
 
 
-class SimpleTest(abc.LoaderTests):
+class SimpleTest(abc.LoaderTests, util.RestoreSysModules):
 
     """Should have no issue importing a source module [basic]. And if there is
     a syntax error, it should raise a SyntaxError [syntax error].
@@ -371,7 +371,7 @@ class SourceDateEpoch_SimpleTest(Source_SimpleTest,
     pass
 
 
-class BadBytecodeTest:
+class BadBytecodeTest(util.RestoreSysModules):
 
     def import_(self, file, module_name):
         raise NotImplementedError
@@ -521,7 +521,7 @@ class BadBytecodeTestPEP302(BadBytecodeTest):
         self.assertIn(module_name, sys.modules)
 
 
-class SourceLoaderBadBytecodeTest:
+class SourceLoaderBadBytecodeTest(util.RestoreSysModules):
 
     @classmethod
     def setUpClass(cls):

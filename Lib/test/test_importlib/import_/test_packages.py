@@ -5,7 +5,7 @@ from test import support
 from test.support import import_helper
 
 
-class ParentModuleTests:
+class ParentModuleTests(util.RestoreSysModules):
 
     """Importing a submodule should import the parent modules."""
 

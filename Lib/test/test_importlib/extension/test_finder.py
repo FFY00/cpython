@@ -6,7 +6,7 @@ import unittest
 import sys
 
 
-class FinderTests(abc.FinderTests):
+class FinderTests(abc.FinderTests, util.RestoreSysModules):
 
     """Test the finder for extension modules."""
 

@@ -8,7 +8,7 @@ import unittest
 import warnings
 
 @unittest.skipIf(util.BUILTINS.good_name is None, 'no reasonable builtin module')
-class LoaderTests(abc.LoaderTests):
+class LoaderTests(abc.LoaderTests, util.RestoreSysModules):
 
     """Test load_module() for built-in modules."""
 
@@ -73,7 +73,7 @@ class LoaderTests(abc.LoaderTests):
 
 
 @unittest.skipIf(util.BUILTINS.good_name is None, 'no reasonable builtin module')
-class InspectLoaderTests:
+class InspectLoaderTests(util.RestoreSysModules):
 
     """Tests for InspectLoader methods for BuiltinImporter."""
 

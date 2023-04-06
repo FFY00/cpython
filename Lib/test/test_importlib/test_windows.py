@@ -85,7 +85,7 @@ def setup_module(machinery, name, path=None):
 
 
 @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
-class WindowsRegistryFinderTests:
+class WindowsRegistryFinderTest(test_util.RestoreSysModules):
     # The module name is process-specific, allowing for
     # simultaneous runs of the same test on a single machine.
     test_module = "spamham{}".format(os.getpid())
@@ -123,7 +123,7 @@ class WindowsRegistryFinderTests:
  ) = test_util.test_both(WindowsRegistryFinderTests, machinery=machinery)
 
 @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
-class WindowsExtensionSuffixTests:
+class WindowsExtensionSuffixTests(test_util.RestoreSysModules):
     def test_tagged_suffix(self):
         suffixes = self.machinery.EXTENSION_SUFFIXES
         expected_tag = ".cp{0.major}{0.minor}-{1}.pyd".format(sys.version_info,

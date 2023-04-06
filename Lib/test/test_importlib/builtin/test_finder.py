@@ -8,7 +8,7 @@ import warnings
 
 
 @unittest.skipIf(util.BUILTINS.good_name is None, 'no reasonable builtin module')
-class FindSpecTests(abc.FinderTests):
+class FindSpecTests(abc.FinderTests, util.RestoreSysModules):
 
     """Test find_spec() for built-in modules."""
 
@@ -51,7 +51,7 @@ class FindSpecTests(abc.FinderTests):
 
 
 @unittest.skipIf(util.BUILTINS.good_name is None, 'no reasonable builtin module')
-class FinderTests(abc.FinderTests):
+class FinderTests(abc.FinderTests, util.RestoreSysModules):
 
     """Test find_module() for built-in modules."""
 

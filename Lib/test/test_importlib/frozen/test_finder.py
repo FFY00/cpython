@@ -19,7 +19,7 @@ def resolve_stdlib_file(name, ispkg=False):
         return os.path.join(STDLIB_DIR, *name.split('.')) + '.py'
 
 
-class FindSpecTests(abc.FinderTests):
+class FindSpecTests(abc.FinderTests, util.RestoreSysModules):
 
     """Test finding frozen modules."""
 
@@ -182,7 +182,7 @@ class FindSpecTests(abc.FinderTests):
  ) = util.test_both(FindSpecTests, machinery=machinery)
 
 
-class FinderTests(abc.FinderTests):
+class FinderTests(abc.FinderTests, util.RestoreSysModules):
 
     """Test finding frozen modules."""
 

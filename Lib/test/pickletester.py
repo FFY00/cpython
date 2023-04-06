@@ -1983,6 +1983,8 @@ class AbstractPickleTests:
                 self.assertIs(type(singleton), u)
 
     def test_builtin_types(self):
+        from pprint import pprint
+        pprint(builtins.__loader__)
         for t in builtins.__dict__.values():
             if isinstance(t, type) and not issubclass(t, BaseException):
                 for proto in protocols:

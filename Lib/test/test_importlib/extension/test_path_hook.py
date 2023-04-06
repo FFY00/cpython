@@ -5,7 +5,7 @@ machinery = util.import_importlib('importlib.machinery')
 import unittest
 
 
-class PathHookTests:
+class PathHookTests(util.RestoreSysModules):
 
     """Test the path hook for extension modules."""
     # XXX Should it only succeed for pre-existing directories?

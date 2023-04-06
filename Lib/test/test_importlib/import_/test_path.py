@@ -12,7 +12,7 @@ import warnings
 import zipimport
 
 
-class FinderTests:
+class FinderTests(util.RestoreSysModules):
 
     """Tests for PathFinder."""
 
@@ -252,7 +252,7 @@ class FindSpecTests(FinderTests):
  ) = util.test_both(FindSpecTests, importlib=importlib, machinery=machinery)
 
 
-class PathEntryFinderTests:
+class PathEntryFinderTests(util.RestoreSysModules):
 
     def test_finder_with_failing_find_spec(self):
         # PathEntryFinder with find_module() defined should work.

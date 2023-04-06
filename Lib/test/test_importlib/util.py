@@ -80,6 +80,8 @@ def split_frozen(cls, base=None, **kwargs):
 
 
 def test_both(test_class, base=None, **kwargs):
+    if not issubclass(test_class, RestoreSysModules):
+        raise TypeError(f'{test_class} must be an instance of RestoreSysModules')
     return split_frozen(test_class, base, **kwargs)
 
 
@@ -408,3 +410,13 @@ class CASEOKTestBase:
         if any(x in self.importlib._bootstrap_external._os.environ
                     for x in possibilities) != should_exist:
             self.skipTest('os.environ changes not reflected in _os.environ')
+
+
+class RestoreSysModules:
+    @classmethod
+    def setUpClass(cls):
+        cls._old_sys_modules = sys.modules.copy()
+
+    @classmethod
+    def tearDownClass(cls):
+        sys.modules = cls._old_sys_modules

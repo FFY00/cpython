@@ -17,7 +17,7 @@ util = test_util.import_importlib('importlib.util')
 
 
 ##### Inheritance ##############################################################
-class InheritanceTests:
+class InheritanceTests(test_util.RestoreSysModules):
 
     """Test that the specified class is a subclass/superclass of the expected
     classes."""
@@ -134,7 +134,7 @@ def make_abc_subclasses(base_class, name=None, inst=False, **kwargs):
             for cls in test_util.split_frozen(base_class, base, **kwargs)}
 
 
-class ABCTestHarness:
+class ABCTestHarness(test_util.RestoreSysModules):
 
     @property
     def ins(self):
@@ -321,7 +321,7 @@ class ResourceReader:
 
 
 ##### MetaPathFinder concrete methods ##########################################
-class MetaPathFinderFindModuleTests:
+class MetaPathFinderFindModuleTests(test_util.RestoreSysModules):
 
     @classmethod
     def finder(cls, spec):
@@ -371,7 +371,7 @@ class MetaPathFinderFindModuleTests:
 
 
 ##### PathEntryFinder concrete methods #########################################
-class PathEntryFinderFindLoaderTests:
+class PathEntryFinderFindLoaderTests(test_util.RestoreSysModules):
 
     @classmethod
     def finder(cls, spec):
@@ -418,7 +418,7 @@ class PathEntryFinderFindLoaderTests:
 
 
 ##### Loader concrete methods ##################################################
-class LoaderLoadModuleTests:
+class LoaderLoadModuleTests(test_util.RestoreSysModules):
 
     def loader(self):
         class SpecLoader(self.abc.Loader):
@@ -471,7 +471,7 @@ class LoaderLoadModuleTests:
 
 
 ##### InspectLoader concrete methods ###########################################
-class InspectLoaderSourceToCodeTests:
+class InspectLoaderSourceToCodeTests(test_util.RestoreSysModules):
 
     def source_to_module(self, data, path=None):
         """Help with source_to_code() tests."""
@@ -519,7 +519,7 @@ class InspectLoaderSourceToCodeTests:
                          InspectLoaderSubclass=SPLIT_IL)
 
 
-class InspectLoaderGetCodeTests:
+class InspectLoaderGetCodeTests(test_util.RestoreSysModules):
 
     def test_get_code(self):
         # Test success.
@@ -552,7 +552,7 @@ class InspectLoaderGetCodeTests:
                          InspectLoaderSubclass=SPLIT_IL)
 
 
-class InspectLoaderLoadModuleTests:
+class InspectLoaderLoadModuleTests(test_util.RestoreSysModules):
 
     """Test InspectLoader.load_module()."""
 
@@ -606,7 +606,7 @@ class InspectLoaderLoadModuleTests:
 
 
 ##### ExecutionLoader concrete methods #########################################
-class ExecutionLoaderGetCodeTests:
+class ExecutionLoaderGetCodeTests(test_util.RestoreSysModules):
 
     def mock_methods(self, *, get_source=False, get_filename=False):
         source_mock_context, filename_mock_context = None, None
@@ -732,7 +732,7 @@ class SourceLoader(SourceOnlyLoader):
 SPLIT_SL = make_abc_subclasses(SourceLoader, util=util, init=init)
 
 
-class SourceLoaderTestHarness:
+class SourceLoaderTestHarness(test_util.RestoreSysModules):
 
     def setUp(self, *, is_package=True, **kwargs):
         self.package = 'pkg'
@@ -946,7 +946,7 @@ class SourceLoaderBytecodeTests(SourceLoaderTestHarness):
                          loader_mock=SPLIT_SL)
 
 
-class SourceLoaderGetSourceTests:
+class SourceLoaderGetSourceTests(test_util.RestoreSysModules):
 
     """Tests for importlib.abc.SourceLoader.get_source()."""
 

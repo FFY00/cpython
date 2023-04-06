@@ -9,7 +9,7 @@ import warnings
 from test.test_importlib import util
 
 
-class Using__package__:
+class Using__package__(util.RestoreSysModules):
 
     """Use of __package__ supersedes the use of __name__/__path__ to calculate
     what package a module belongs to. The basic algorithm is [__package__]::

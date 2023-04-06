@@ -17,7 +17,7 @@ import unittest.mock
 import warnings
 
 
-class DecodeSourceBytesTests:
+class DecodeSourceBytesTests(util.RestoreSysModules):
 
     source = "string ='ü'"
 
@@ -43,7 +43,7 @@ class DecodeSourceBytesTests:
  ) = util.test_both(DecodeSourceBytesTests, util=importlib_util)
 
 
-class ModuleFromSpecTests:
+class ModuleFromSpecTests(util.RestoreSysModules):
 
     def test_no_create_module(self):
         class Loader:
@@ -121,7 +121,7 @@ class ModuleFromSpecTests:
                    util=importlib_util)
 
 
-class ResolveNameTests:
+class ResolveNameTests(util.RestoreSysModules):
 
     """Tests importlib.util.resolve_name()."""
 
@@ -159,7 +159,7 @@ class ResolveNameTests:
  ) = util.test_both(ResolveNameTests, util=importlib_util)
 
 
-class FindSpecTests:
+class FindSpecTests(util.RestoreSysModules):
 
     class FakeMetaFinder:
         @staticmethod
@@ -296,7 +296,7 @@ class FindSpecTests:
                          machinery=machinery)
 
 
-class MagicNumberTests:
+class MagicNumberTests(util.RestoreSysModules):
 
     def test_length(self):
         # Should be 4 bytes.
@@ -312,7 +312,7 @@ class MagicNumberTests:
  ) = util.test_both(MagicNumberTests, util=importlib_util)
 
 
-class PEP3147Tests:
+class PEP3147Tests(util.RestoreSysModules):
 
     """Tests of PEP 3147-related functions: cache_from_source and source_from_cache."""
 

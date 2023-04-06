@@ -19,7 +19,7 @@ class SpecLoaderMock:
         pass
 
 
-class SpecLoaderAttributeTests:
+class SpecLoaderAttributeTests(util.RestoreSysModules):
 
     def test___loader__(self):
         loader = SpecLoaderMock()
@@ -43,7 +43,7 @@ class LoaderMock:
         return self.module
 
 
-class LoaderAttributeTests:
+class LoaderAttributeTests(util.RestoreSysModules):
 
     def test___loader___missing(self):
         with warnings.catch_warnings():

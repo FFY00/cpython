@@ -39,7 +39,7 @@ class BadLoaderFinder:
             raise ImportError('I cannot be loaded!')
 
 
-class APITest:
+class APITest(util.RestoreSysModules):
 
     """Test API-specific details for __import__ (e.g. raising the right
     exception when passing in an int for the module name)."""

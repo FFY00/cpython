@@ -13,7 +13,7 @@ import warnings
 
 
 @util.case_insensitive_tests
-class CaseSensitivityTest(util.CASEOKTestBase):
+class CaseSensitivityTest(util.CASEOKTestBase, util.RestoreSysModules):
 
     """PEP 235 dictates that on case-preserving, case-insensitive file systems
     that imports are case-sensitive unless the PYTHONCASEOK environment

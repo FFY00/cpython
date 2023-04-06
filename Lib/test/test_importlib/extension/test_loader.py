@@ -13,7 +13,7 @@ import importlib
 from test.support.script_helper import assert_python_failure
 
 
-class LoaderTests:
+class LoaderTests(util.RestoreSysModules):
 
     """Test ExtensionFileLoader."""
 
@@ -96,7 +96,7 @@ class LoaderTests:
  ) = util.test_both(LoaderTests, machinery=machinery)
 
 
-class SinglePhaseExtensionModuleTests(abc.LoaderTests):
+class SinglePhaseExtensionModuleTests(abc.LoaderTests, util.RestoreSysModules):
     # Test loading extension modules without multi-phase initialization.
 
     def setUp(self):
@@ -177,7 +177,7 @@ class SinglePhaseExtensionModuleTests(abc.LoaderTests):
  ) = util.test_both(SinglePhaseExtensionModuleTests, machinery=machinery)
 
 
-class MultiPhaseExtensionModuleTests(abc.LoaderTests):
+class MultiPhaseExtensionModuleTests(abc.LoaderTests, util.RestoreSysModules):
     # Test loading extension modules with multi-phase initialization (PEP 489).
 
     def setUp(self):

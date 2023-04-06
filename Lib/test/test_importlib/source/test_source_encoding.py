@@ -16,7 +16,7 @@ import warnings
 CODING_RE = re.compile(r'^[ \t\f]*#.*?coding[:=][ \t]*([-\w.]+)', re.ASCII)
 
 
-class EncodingTest:
+class EncodingTest(util.RestoreSysModules):
 
     """PEP 3120 makes UTF-8 the default encoding for source code
     [default encoding].
@@ -115,7 +115,7 @@ class EncodingTestPEP302(EncodingTest):
  ) = util.test_both(EncodingTestPEP302, machinery=machinery)
 
 
-class LineEndingTest:
+class LineEndingTest(util.RestoreSysModules):
 
     r"""Source written with the three types of line endings (\n, \r\n, \r)
     need to be readable [cr][crlf][lf]."""

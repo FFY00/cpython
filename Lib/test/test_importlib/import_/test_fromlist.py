@@ -4,7 +4,7 @@ import warnings
 import unittest
 
 
-class ReturnValue:
+class ReturnValue(util.RestoreSysModules):
 
     """The use of fromlist influences what import returns.
 
@@ -35,7 +35,7 @@ class ReturnValue:
  ) = util.test_both(ReturnValue, __import__=util.__import__)
 
 
-class HandlingFromlist:
+class HandlingFromlist(util.RestoreSysModules):
 
     """Using fromlist triggers different actions based on what is being asked
     of it.

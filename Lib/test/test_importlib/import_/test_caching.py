@@ -6,7 +6,7 @@ import unittest
 import warnings
 
 
-class UseCache:
+class UseCache(util.RestoreSysModules):
 
     """When it comes to sys.modules, import prefers it over anything else.
 

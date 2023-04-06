@@ -47,7 +47,7 @@ class NewLoader(TestLoader):
         module.eggs = self.EGGS
 
 
-class ModuleSpecTests:
+class ModuleSpecTests(test_util.RestoreSysModules):
 
     def setUp(self):
         self.name = 'spam'
@@ -215,7 +215,7 @@ class ModuleSpecTests:
  ) = test_util.test_both(ModuleSpecTests, util=util, machinery=machinery)
 
 
-class ModuleSpecMethodsTests:
+class ModuleSpecMethodsTests(test_util.RestoreSysModules):
 
     @property
     def bootstrap(self):
@@ -359,7 +359,7 @@ class ModuleSpecMethodsTests:
                          machinery=machinery)
 
 
-class FactoryTests:
+class FactoryTests(test_util.RestoreSysModules):
 
     def setUp(self):
         self.name = 'spam'

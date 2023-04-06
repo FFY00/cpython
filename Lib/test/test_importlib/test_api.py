@@ -13,7 +13,7 @@ import unittest
 import warnings
 
 
-class ImportModuleTests:
+class ImportModuleTests(test_util.RestoreSysModules):
 
     """Test importlib.import_module."""
 
@@ -98,7 +98,7 @@ class ImportModuleTests:
  ) = test_util.test_both(ImportModuleTests, init=init)
 
 
-class FindLoaderTests:
+class FindLoaderTests(test_util.RestoreSysModules):
 
     FakeMetaFinder = None
 
@@ -198,7 +198,7 @@ class FindLoaderPEP302Tests(FindLoaderTests):
  ) = test_util.test_both(FindLoaderPEP302Tests, init=init)
 
 
-class ReloadTests:
+class ReloadTests(test_util.RestoreSysModules):
 
     def test_reload_modules(self):
         for mod in ('tokenize', 'time', 'marshal'):
@@ -383,7 +383,7 @@ class ReloadTests:
  ) = test_util.test_both(ReloadTests, init=init, util=util)
 
 
-class InvalidateCacheTests:
+class InvalidateCacheTests(test_util.RestoreSysModules):
 
     def test_method_called(self):
         # If defined the method should be called.
@@ -431,7 +431,7 @@ class FrozenImportlibTests(unittest.TestCase):
                             'FrozenImporter')
 
 
-class StartupTests:
+class StartupTests(test_util.RestoreSysModules):
 
     def test_everyone_has___loader__(self):
         # Issue #17098: all modules should have __loader__ defined.

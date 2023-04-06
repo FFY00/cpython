@@ -38,7 +38,7 @@ def resolve_stdlib_file(name, ispkg=False):
         return os.path.join(STDLIB_DIR, *name.split('.')) + '.py'
 
 
-class ExecModuleTests(abc.LoaderTests):
+class ExecModuleTests(abc.LoaderTests, util.RestoreSysModules):
 
     def exec_module(self, name, origname=None):
         with import_helper.frozen_modules():
@@ -125,7 +125,7 @@ class ExecModuleTests(abc.LoaderTests):
  ) = util.test_both(ExecModuleTests, machinery=machinery)
 
 
-class LoaderTests(abc.LoaderTests):
+class LoaderTests(abc.LoaderTests, util.RestoreSysModules):
 
     def load_module(self, name):
         with fresh(name, oldapi=True):
@@ -207,7 +207,7 @@ class LoaderTests(abc.LoaderTests):
  ) = util.test_both(LoaderTests, machinery=machinery)
 
 
-class InspectLoaderTests:
+class InspectLoaderTests(util.RestoreSysModules):
 
     """Tests for the InspectLoader methods for FrozenImporter."""
 
