@@ -1584,6 +1584,7 @@ class FileFinder:
         self._path_mtime = -1
         self._path_cache = set()
         self._relaxed_path_cache = set()
+        self._isfile_cache = {}
 
     def invalidate_caches(self):
         """Invalidate the directory mtime."""
@@ -1593,6 +1594,14 @@ class FileFinder:
         loader = loader_class(fullname, path)
         return spec_from_file_location(fullname, path, loader=loader,
                                        submodule_search_locations=smsl)
+
+    def _path_isfile(self, path):
+        try:
+            return self._isfile_cache[path]
+        except KeyError:
+            isfile = _path_isfile(path)
+            self._isfile_cache[path] = isfile
+            return isfile
 
     def find_spec(self, fullname, target=None):
         """Try to find a spec for the specified module.
@@ -1606,7 +1615,7 @@ class FileFinder:
         except OSError:
             mtime = -1
         if mtime != self._path_mtime:
-            self._fill_cache()
+            self._reset_cache()
             self._path_mtime = mtime
         # tail_module keeps the original casing, for __file__ and friends
         if _relax_case():
@@ -1621,7 +1630,7 @@ class FileFinder:
             for suffix, loader_class in self._loaders:
                 init_filename = '__init__' + suffix
                 full_path = _path_join(base_path, init_filename)
-                if _path_isfile(full_path):
+                if self._path_isfile(full_path):
                     return self._get_spec(loader_class, fullname, full_path, [base_path], target)
             else:
                 # If a namespace package, return the path if we don't
@@ -1635,7 +1644,7 @@ class FileFinder:
                 return None
             _bootstrap._verbose_message('trying {}', full_path, verbosity=2)
             if cache_module + suffix in cache:
-                if _path_isfile(full_path):
+                if self._path_isfile(full_path):
                     return self._get_spec(loader_class, fullname, full_path,
                                           None, target)
         if is_namespace:
@@ -1644,6 +1653,10 @@ class FileFinder:
             spec.submodule_search_locations = [base_path]
             return spec
         return None
+
+    def _reset_cache(self):
+        self._fill_cache()
+        self._isfile_cache.clear()
 
     def _fill_cache(self):
         """Fill the cache of potential modules and packages for this directory."""
