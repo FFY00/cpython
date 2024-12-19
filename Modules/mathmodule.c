@@ -72,6 +72,19 @@ raised for division by zero and mod by zero.
 
 #include "clinic/mathmodule.c.h"
 
+/* Resolve fmod at runtime, so that we don't have a GLIBC-versioned symbol
+   reference in the linker table . */
+#ifdef __GNUC__
+#include <dlfcn.h>
+
+static double (*resolve_fmod(double,  double))() {
+    return dlsym(RTLD_NEXT, "fmod");
+}
+
+__attribute__((ifunc("resolve_fmod")))
+double fmod(double x, double y);
+#endif
+
 /*[clinic input]
 module math
 [clinic start generated code]*/
