@@ -588,6 +588,10 @@ extern char        *ctermid_r(char *);
 #  include <sanitizer/msan_interface.h>
 #endif
 
+/* Weak references. */
+__attribute__((weak))
+int setns(int fd, int nstype);
+
 #ifdef HAVE_FORK
 static void
 run_at_forkers(PyObject *lst, int reverse)
@@ -10207,7 +10211,6 @@ os_pidfd_open_impl(PyObject *module, pid_t pid, unsigned int flags)
 #endif
 
 
-#ifdef HAVE_SETNS
 /*[clinic input]
 os.setns
   fd: fildes
@@ -10234,7 +10237,6 @@ os_setns_impl(PyObject *module, int fd, int nstype)
 
     Py_RETURN_NONE;
 }
-#endif
 
 
 #ifdef HAVE_UNSHARE
@@ -17059,7 +17061,6 @@ static PyMethodDef posix_methods[] = {
     OS__ADD_DLL_DIRECTORY_METHODDEF
     OS__REMOVE_DLL_DIRECTORY_METHODDEF
     OS_WAITSTATUS_TO_EXITCODE_METHODDEF
-    OS_SETNS_METHODDEF
     OS_UNSHARE_METHODDEF
     OS_TIMERFD_CREATE_METHODDEF
     OS_TIMERFD_SETTIME_METHODDEF
@@ -17080,6 +17081,10 @@ static PyMethodDef posix_methods[] = {
     OS__IS_INPUTHOOK_INSTALLED_METHODDEF
     OS__CREATE_ENVIRON_METHODDEF
     OS__EMSCRIPTEN_DEBUGGER_METHODDEF
+
+    /* Conditional methods.*/
+    {NULL, NULL},  /* OS_SETNS_METHODDEF */
+
     {NULL,              NULL}            /* Sentinel */
 };
 
@@ -18127,5 +18132,16 @@ static struct PyModuleDef posixmodule = {
 PyMODINIT_FUNC
 INITFUNC(void)
 {
+    Py_ssize_t i = 0;
+
+    /* Find start of conditionals */
+    while (posix_methods[i++].ml_name != NULL) {}
+
+    /* os.setns support */
+    if (setns) {
+        PyMethodDef setns_method[] = {OS_SETNS_METHODDEF};
+        posix_methods[i++] = *setns_method;
+    }
+
     return PyModuleDef_Init(&posixmodule);
 }

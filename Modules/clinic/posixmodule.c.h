@@ -6221,8 +6221,6 @@ exit:
 
 #endif /* (defined(__linux__) && defined(__NR_pidfd_open) && !(defined(__ANDROID__) && __ANDROID_API__ < 31)) */
 
-#if defined(HAVE_SETNS)
-
 PyDoc_STRVAR(os_setns__doc__,
 "setns($module, /, fd, nstype=0)\n"
 "--\n"
@@ -6296,8 +6294,6 @@ skip_optional_pos:
 exit:
     return return_value;
 }
-
-#endif /* defined(HAVE_SETNS) */
 
 #if defined(HAVE_UNSHARE)
 
@@ -12833,10 +12829,6 @@ os__emscripten_debugger(PyObject *module, PyObject *Py_UNUSED(ignored))
     #define OS_PIDFD_OPEN_METHODDEF
 #endif /* !defined(OS_PIDFD_OPEN_METHODDEF) */
 
-#ifndef OS_SETNS_METHODDEF
-    #define OS_SETNS_METHODDEF
-#endif /* !defined(OS_SETNS_METHODDEF) */
-
 #ifndef OS_UNSHARE_METHODDEF
     #define OS_UNSHARE_METHODDEF
 #endif /* !defined(OS_UNSHARE_METHODDEF) */
@@ -13140,4 +13132,4 @@ os__emscripten_debugger(PyObject *module, PyObject *Py_UNUSED(ignored))
 #ifndef OS__EMSCRIPTEN_DEBUGGER_METHODDEF
     #define OS__EMSCRIPTEN_DEBUGGER_METHODDEF
 #endif /* !defined(OS__EMSCRIPTEN_DEBUGGER_METHODDEF) */
-/*[clinic end generated code: output=9c2ca1dbf986c62c input=a9049054013a1b77]*/
+/*[clinic end generated code: output=bccd2933f837de05 input=a9049054013a1b77]*/
